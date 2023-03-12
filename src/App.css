@@ -1,0 +1,19 @@
+.App {
+  text-align: center;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.route-container {
+  flex-grow: 1;
+  margin-left: 200px;
+}
