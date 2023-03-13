@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Chat.css";
 
 export const Chat = () => {
   const [messages, setMessages] = useState([]);
+  const [height, setHeight] = useState(0);
+  const [value, setValue] = useState("");
+  const textAreaRef = useRef(null);
 
   useEffect(() => {
     // 直近10やり取りの読み取り
@@ -51,21 +54,62 @@ export const Chat = () => {
     ]);
   }, []);
 
+  useEffect(() => {
+    if (textAreaRef.current) {
+      setHeight(0); // テキストエリアの高さを初期値に戻す
+    }
+  }, [value]);
+
+  useEffect(() => {
+    // 高さが初期値の場合にscrollHeightを高さに設定する
+    if (!height && textAreaRef.current) {
+      setHeight(textAreaRef.current.scrollHeight);
+    }
+  }, [height]);
+
+  const handleChangeValue = (value) => {
+    setValue(value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Submit:", value);
+    setValue("");
+    // テキスト送信処理を実装する
+  };
+
+  const handleKeyDown = (e) => {
+    if (
+      (window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
+      e.keyCode === 13
+    ) {
+      handleSubmit(e);
+    }
+  };
+
   return (
     <div className="chat-container">
       {messages.map((message, index) => (
         <div key={index} className={`message ${message.who}`}>
-          <p>{message.who + ":"}</p>
+          <p>
+            <strong>{message.who + ":"}</strong>
+          </p>
           <p>{message.message}</p>
         </div>
       ))}
       <div className="bottom-gap"></div>
-      <div className="sendmessage-container">
+      <form className="sendmessage-container" onSubmit={handleSubmit}>
         <textarea
           id="input-field"
-          placeholder="何でも聞いてください"
+          placeholder="何でも聞いてくださいよ"
+          value={value}
+          ref={textAreaRef}
+          onChange={(evt) => handleChangeValue(evt.target.value)}
+          onKeyDown={handleKeyDown}
+          style={{ height: height ? `${height}px` : "auto" }}
         ></textarea>
-      </div>
+        <button type="submit">送信</button>
+      </form>
     </div>
   );
 };

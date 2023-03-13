@@ -3,7 +3,7 @@ import "./Sidebar.css";
 
 export const Sidebar = () => {
   return (
-    <div className="sidebar-container">
+    <div className="sidebar">
       <ul>
         <li>
           <a href="/">セッション1</a>

@@ -1,5 +1,4 @@
 .chat-container {
-    /* height: 100vh; */
     max-width: 1000px;
     width: 100%;
     display: flex;
@@ -7,13 +6,12 @@
     justify-content: center;
     align-items: center;
     margin: 0 auto; /* 左右中央に配置 */
-    /* padding: 16px; */
+    padding: 16px;
     flex-grow: 1;
   }
   
   .message {
-    max-width: 600px;
-    /* width: 90%; */
+    max-width: 90%;
     margin: 0 8px 10px 10px;
     padding: 8px 12px;
     border-radius: 16px;
@@ -35,7 +33,7 @@
   }
 
   .bottom-gap {
-    height: 150px;
+    height: 120px;
     width: 100%;
   }
 
@@ -43,28 +41,35 @@
     position: fixed;
     height: auto;
     bottom: 0;
-    width: calc(100% - 200px);
+    padding-bottom: 30px;
+    width: inherit;
     height: 150px;
     /* background-color: black; */
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: end;
     background-image: linear-gradient(0deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+    z-index: 1;
   }
 
+  form {
+    width: 100%;
+  }
   textarea {
-    min-width: 500px;
-  width: 80%;
-  height: 50px;
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  font-size: 16px;
-  resize: none;
-  overflow: hidden;
-  transition: height 0.3s ease-in-out;
-  box-shadow: 0px 0px 15px -5px #171717;
-}
+    min-width: 300px;
+    width: 60%;
+    max-height: 400px;
+    padding: 8px;
+    bottom: 60px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    resize: none;
+    overflow: hidden;
+    transition: height 0.3s ease-in-out;
+    box-shadow: 0px 0px 15px -5px #171717;
+    z-index: 2;
+  }
 
 textarea:focus {
   outline: none;
