@@ -75,7 +75,7 @@ export const Chat = () => {
     if (value.trim() === "") {
       return;
     }
-
+    console.log("asking gpt...");
     setMessages([...messages, { who: "me", message: value }]);
 
     try {
@@ -106,7 +106,11 @@ export const Chat = () => {
       const generatedText = response.data.choices[0].message.content;
       // setResponses([...responses, { message, response: generatedText }]);
       // setMessage("");
-      setMessages([...messages, { who: "bot", message: generatedText }]);
+      setMessages([
+        ...messages,
+        { who: "me", message: value },
+        { who: "bot", message: generatedText },
+      ]);
     } catch (error) {
       console.error("Error:", error);
     }
