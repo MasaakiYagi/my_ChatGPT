@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { FaPaperPlane } from "react-icons/fa";
+import { animateScroll as scroll } from "react-scroll";
+import axios from "axios";
 import "./Chat.css";
 
 export const Chat = () => {
@@ -6,7 +9,13 @@ export const Chat = () => {
   const [height, setHeight] = useState(0);
   const [value, setValue] = useState("");
   const textAreaRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
+  const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
+  const API_URL = "https://api.openai.com/v1/";
+  const MODEL = "gpt-3.5-turbo";
+
+  // #region 仮メッセージのハードコード
   useEffect(() => {
     // 直近10やり取りの読み取り
     setMessages([
@@ -53,6 +62,59 @@ export const Chat = () => {
       },
     ]);
   }, []);
+  // #endregion
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({
+      behavior: "smooth", // アニメーションの種類
+      block: "end", // スクロールの位置
+    });
+  };
+
+  const sendMessage = async () => {
+    if (value.trim() === "") {
+      return;
+    }
+
+    setMessages([...messages, { who: "me", message: value }]);
+
+    try {
+      const response = await axios.post(
+        `${API_URL}chat/completions`,
+        {
+          // モデル ID の指定
+          model: MODEL,
+          // 質問内容
+          messages: [
+            {
+              role: "user",
+              content: value,
+            },
+          ],
+        },
+        {
+          // 送信する HTTP ヘッダー(認証情報)
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+          },
+        }
+      );
+
+      // const response = await axios(requestOptions);
+      console.log(response.data);
+      const generatedText = response.data.choices[0].message.content;
+      // setResponses([...responses, { message, response: generatedText }]);
+      // setMessage("");
+      setMessages([...messages, { who: "bot", message: generatedText }]);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     if (textAreaRef.current) {
@@ -74,8 +136,9 @@ export const Chat = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submit:", value);
-    setValue("");
+    sendMessage();
     // テキスト送信処理を実装する
+    setValue("");
   };
 
   const handleKeyDown = (e) => {
@@ -108,8 +171,11 @@ export const Chat = () => {
           onKeyDown={handleKeyDown}
           style={{ height: height ? `${height}px` : "auto" }}
         ></textarea>
-        <button type="submit">送信</button>
+        <button className="submit-button" type="submit">
+          <FaPaperPlane className="icon"></FaPaperPlane>
+        </button>
       </form>
+      <div ref={messagesEndRef}></div>
     </div>
   );
 };
