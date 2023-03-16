@@ -3,11 +3,16 @@ import { FaPaperPlane } from "react-icons/fa";
 import { animateScroll as scroll } from "react-scroll";
 import axios from "axios";
 import "./Chat.css";
+import Message from "../message/Massage";
+import MessageForm from "../messageform/MessageForm";
+import LoadingIndicator from "../loadingindicator/LoadingIndicator";
 
 export const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [height, setHeight] = useState(0);
   const [value, setValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const textAreaRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -25,10 +30,10 @@ export const Chat = () => {
         who: "bot",
         message:
           "SAP Concur（サップ・コンカー）は、ビジネストラベル・エクスペンス・マネジメントに特化したクラウドベースのソフトウェアです。旅費精算や経費管理の業務を効率化し、従業員の負担を軽減することができます。\
-\
-      具体的には、出張や旅行の予約から精算までの一連の業務をシステム化し、自動化することができます。従業員は、スマートフォンやPCから、交通費や宿泊費などの請求書を申請し、承認されると自動的に経理システムに反映されます。また、業務で使用するクレジットカードの利用状況や予算の管理も可能です。\
-      \
-      SAP Concurは、企業の規模や業種に応じて、さまざまなプランを提供しています。また、多言語対応やグローバルな法規制にも対応しているため、世界各地でのビジネストラベルにも対応しています。",
+  \
+        具体的には、出張や旅行の予約から精算までの一連の業務をシステム化し、自動化することができます。従業員は、スマートフォンやPCから、交通費や宿泊費などの請求書を申請し、承認されると自動的に経理システムに反映されます。また、業務で使用するクレジットカードの利用状況や予算の管理も可能です。\
+        \
+        SAP Concurは、企業の規模や業種に応じて、さまざまなプランを提供しています。また、多言語対応やグローバルな法規制にも対応しているため、世界各地でのビジネストラベルにも対応しています。",
       },
       { who: "me", message: "SAP Concurは、従業員のための経費精算の仕組み？" },
       {
@@ -75,6 +80,7 @@ export const Chat = () => {
     if (value.trim() === "") {
       return;
     }
+    setIsLoading(true);
     console.log("asking gpt...");
     setMessages([...messages, { who: "me", message: value }]);
 
@@ -106,6 +112,7 @@ export const Chat = () => {
       const generatedText = response.data.choices[0].message.content;
       // setResponses([...responses, { message, response: generatedText }]);
       // setMessage("");
+      setIsLoading(false);
       setMessages([
         ...messages,
         { who: "me", message: value },
@@ -157,28 +164,16 @@ export const Chat = () => {
   return (
     <div className="chat-container">
       {messages.map((message, index) => (
-        <div key={index} className={`message ${message.who}`}>
-          <p>
-            <strong>{message.who + ":"}</strong>
-          </p>
-          <p>{message.message}</p>
-        </div>
+        <Message key={index} who={message.who} content={message.message} />
       ))}
+      {isLoading && <LoadingIndicator />}
       <div className="bottom-gap"></div>
-      <form className="sendmessage-container" onSubmit={handleSubmit}>
-        <textarea
-          id="input-field"
-          placeholder="何でも聞いてくださいよ"
-          value={value}
-          ref={textAreaRef}
-          onChange={(evt) => handleChangeValue(evt.target.value)}
-          onKeyDown={handleKeyDown}
-          style={{ height: height ? `${height}px` : "auto" }}
-        ></textarea>
-        <button className="submit-button" type="submit">
-          <FaPaperPlane className="icon"></FaPaperPlane>
-        </button>
-      </form>
+      <MessageForm
+        value={value}
+        handleChange={handleChangeValue}
+        handleSubmit={handleSubmit}
+        handleKeyDown={handleKeyDown}
+      />
       <div ref={messagesEndRef}></div>
     </div>
   );
