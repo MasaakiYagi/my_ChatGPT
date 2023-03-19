@@ -9,6 +9,7 @@ import LoadingIndicator from "../loadingindicator/LoadingIndicator";
 
 export const Chat = () => {
   const [messages, setMessages] = useState([]);
+  const [sendValue, setSendValue] = useState("");
   const [height, setHeight] = useState(0);
   const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -77,12 +78,12 @@ export const Chat = () => {
   };
 
   const sendMessage = async () => {
-    if (value.trim() === "") {
+    if (sendValue.trim() === "") {
       return;
     }
     setIsLoading(true);
     console.log("asking gpt...");
-    setMessages([...messages, { who: "me", message: value }]);
+    setMessages([...messages, { who: "me", message: sendValue }]);
 
     try {
       const response = await axios.post(
@@ -94,7 +95,7 @@ export const Chat = () => {
           messages: [
             {
               role: "user",
-              content: value,
+              content: sendValue,
             },
           ],
         },
@@ -115,7 +116,7 @@ export const Chat = () => {
       setIsLoading(false);
       setMessages([
         ...messages,
-        { who: "me", message: value },
+        { who: "me", message: sendValue },
         { who: "bot", message: generatedText },
       ]);
     } catch (error) {
@@ -147,6 +148,7 @@ export const Chat = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submit:", value);
+    setSendValue(value);
     sendMessage();
     // テキスト送信処理を実装する
     setValue("");
